@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Submission API
+  description: |-
+     To manage the process of submitting information related Submissions
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+paths:
+  /submitSubmission:
+    post:
+      tags:
+        - submissionStatus
+      summary: Submit Subission ID
+      description: Submit Subission ID
+      operationId: submitSubmission
+      requestBody:
+        description: Submit a submission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submission'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionResponse'          
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Submission:
+      required:
+        - submissionId
+      type: object
+      properties:
+        submissionId:
+          type: string
+          pattern: "^[A-Za-z0-9_-]+$"
+          example: "123"
+        lob:
+          type: string
+          example: "Sample Line of business"
+    SubmissionResponse:
+      type: object
+      properties:
+        submissionStatus:
+          type: string
+          example: "Submitted"
