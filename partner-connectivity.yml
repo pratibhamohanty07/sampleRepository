@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Submission API
+  title: Quote Submission API
   description: |-
      To manage the process of submitting information related Submissions
   termsOfService: http://swagger.io/terms/
@@ -17,19 +17,19 @@ servers:
   - url: https://mocktarget.apigee.net
   - url: http://mocktarget.apigee.net
 paths:
-  /submitSubmission:
+  /quoteSubmission:
     post:
       tags:
         - submissionStatus
-      summary: Submit Subission ID
-      description: Submit Subission ID
-      operationId: submitSubmission
+      summary: Post Subission Request
+      description: Post Subission Request
+      operationId: postSubmissionRequest
       requestBody:
-        description: Submit a submission
+        description: Submit a submission Request to the UWWB
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Submission'
+              $ref: '#/components/schemas/quoteSubmissionRequest'
         required: true
       responses:
         '200':
@@ -37,26 +37,257 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubmissionResponse'          
+                $ref: '#/components/schemas/quoteSubmissionResponse'          
         '405':
           description: Invalid input
 components:
   schemas:
-    Submission:
+    quoteSubmissionRequest:
+      type: object
+      properties:
+        submission:
+         type: object
+         properties:
+          brokerSubmissionId:
+            type: string
+            example: "202E555C-326F-4B83-87F6-9C7673D01B97"
+          brokerSubmissionVersion:
+            type: number
+            example: 1
+          initialInformation: 
+           $ref: '#/components/schemas/initialInformation'
+          generalInformation: 
+           $ref: '#/components/schemas/generalInformation'
+          parties:
+           type: array
+           items: 
+            $ref: '#/components/schemas/party'
+          exposures: 
+           type: array
+           items:
+            $ref: '#/components/schemas/location'
+          claims: 
+           type: array
+           items:
+            $ref: '#/components/schemas/claim'
+          documents: 
+           type: array
+           items:
+            $ref: '#/components/schemas/document'
+    quoteSubmissionResponse:
+      type: object
+      properties:
+        brokerSubmissionId:
+          type: string
+          example: "202E555C-326F-4B83-87F6-9C7673D01B97"
+        brokerSubmissionVersion:
+          type: number
+          example: 1
+        correlationId:
+          type: string
+          example: "202E555C-326F-4B83-87F6-9C7673D01B97"
+        carrierSubmissionID:
+          type: string
+          example: "202E555C-326F-4B83-87F6-9C7673D01B97"
+    party:
       required:
-        - submissionId
+        - partyName
+        - role
+        - isPrimary
       type: object
       properties:
-        submissionId:
-          type: string
-          pattern: "^[A-Za-z0-9_-]+$"
-          example: "123"
-        lob:
-          type: string
-          example: "Sample Line of business"
-    SubmissionResponse:
+       dunsNumber:
+        type: string
+        example: "Sample DUNS Number"
+       partyName:
+        type: string
+        description: "Legal Entity Name - WTW"
+        example: "Sample DUNS Number"
+       partyReferenceNumber:
+        type: string
+        description: "Broker code - WTW"
+        example: "Sample Party Reference Number"
+       partyPsuedonym:
+        type: string
+        description: "Broker Psuedonym - WTW"
+        example: "Sample Party Psuedonym"
+       buildingNumber:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Building number"
+       street:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Street"
+       city:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample City"
+       country:
+        type: string
+        description: "Domicile Location? - WTW"
+        example: "Sample country"
+       postalCode:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample postal code"
+       contactName:
+        type: string
+        description: "contact.name? - WTW"
+        example: "Sample Contact Name"
+       contactPhone:
+        type: string
+        description: "contact.phone? - WTW"
+        example: "Sample Contact Phone"
+       contactEmail:
+        type: string
+        description: "contact.email? - WTW"
+        example: "Sample Contact Email"
+       role:
+        type: string
+        description: "role - WTW"
+        example: "Sample role such as Client, Broker, Agent, Co-Insurer"
+       isPrimary:
+        type: boolean
+        description: "isPrimary - WTW"
+        example: true
+    initialInformation:
       type: object
+      required:
+        - submissionReceivedOn
+        - quoteRequiredBy
+        - submissionType
+        - renewalType
+        - submissionDescription
+        - submissionSource
+        - programCurrency
+        - timeZone
+        - inceptionDate
+        - underWritingYear
+        - expiryDate
+        - duration
+        - daysOrWeeksOrMonths
       properties:
-        submissionStatus:
-          type: string
-          example: "Submitted"
+       correlationID:
+        type: string
+        description: "correlationId - WTW"
+        example: "{D378FD2F-E54E-43EE-9D7D-E73BD896EAF3}"
+       expiringContractReference:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Expiring Contract Reference" 
+       contractReference:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Contract Reference"
+       quoteRequiredBy:
+        type: string
+        description: "Yet to find out - WTW"
+        format: date-time
+        example: "2022-08-21T17:32:28Z"
+       submissionType:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Submission Type"
+       submissionDescription:
+        type: string
+        description: "commentary? - WTW"
+        example: "Sample comments"
+       programCurrency:
+        type: string
+        description: "Yet to find out - WTW"
+        example: "Sample Program Currency"
+       timeZone:
+        $ref: '#/components/schemas/timeZone'
+       inceptionDate:
+        type: string
+        description: "Policy inception date. WTW Mapped field - inceptionDate"
+        format: date-time
+        example: "2022-08-21T17:32:28Z"
+       underWritingYear:
+        type: integer
+        description: "Policy underwriting year. This will be based on inception date. WTW Mapped field - yet to find out"
+        example: 2022
+       expiryDate:
+        type: string
+        description: "Policy exipry date. WTW Mapped field - inceptionDate"
+        format: date-time
+        example: "2022-08-21T17:32:28Z"
+    generalInformation:
+      type: object
+      required:
+        - agcsOE
+        - aoc
+        - agcsIndustryVertical
+      properties:
+       agcsOE:
+        type: string
+        description: "Operational Entity of AGCS, which receives the Submission or handles the account.. WTW field - yet to find out"
+        example: "Sample AGCS OE"
+       insuranceType:
+        type: string
+        description: "The insurance type of the contract being placed.WTW field - yet to find out"
+        example: "Sample AGCS OE"
+       lineOfBusiness:
+        type: string
+        description: "Business line or class for Policy. or a single submission, there could be many LOB's"
+        example: "e.g. Property, Liability, E&C, Marine"
+       product:
+        type: string
+        description: "Product name for the submission."
+        example: "LargeCorp Property Master Product"
+       isicPlus:
+        type: string
+        description: "ISIC+ industry classification of the location"
+        example: "ISIC+ industry classification of the location"
+    location:
+     type: object
+     required:
+       - exposureId
+     properties:
+       exposureId:
+        type: string
+        description: "Name of the location. WTW Mapped field - exposureID"
+        example: "1234"
+    claim:
+     type: object
+     required:
+       - claimId
+     properties:
+       claimId:
+        type: string
+        description: "Name of the location. WTW Mapped field - exposureID"
+        example: "1234"
+    document:
+     type: object
+     required:
+       - documentId
+     properties:
+       documentId:
+        type: string
+        description: "Name of the location. WTW Mapped field - exposureID"
+        example: "1234"
+    timeZone:
+     type: object
+     properties:
+       value:
+        type: string
+        description: "GMT Standard Time"
+        example: "GMT Standard Time"
+       abbr:
+        type: string
+        description: "GDT"
+        example: "GDT"
+       offset:
+        type: number
+        description: "offset"
+        example: 1
+       isdst:
+        type: boolean
+        description: "true or false"
+        example: true
+       text:
+        type: string
+        description: "(UTC) Dublin, Edinburgh, Lisbon, London"
+        example: "(UTC) Dublin, Edinburgh, Lisbon, London"
+       
